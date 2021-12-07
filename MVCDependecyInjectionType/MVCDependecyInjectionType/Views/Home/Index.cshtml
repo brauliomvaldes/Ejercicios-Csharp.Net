@@ -1,0 +1,25 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+
+    var transient1 = (MyObject)ViewBag.transient1;
+    var scoped1 = (MyObject)ViewBag.scoped1;
+    var singleton1 = (MyObject)ViewBag.singleton1;
+
+    var transient2 = (MyObject)ViewBag.transient2;
+    var scoped2 = (MyObject)ViewBag.scoped2;
+    var singleton2 = (MyObject)ViewBag.singleton2;
+
+}
+
+<div class="text-center">
+    <b>Transient 1=</b> @transient1.Value
+    <b>Scoped 1=</b> @scoped1.Value
+    <b>Singleton 1=</b> @singleton1.Value
+</div>
+
+
+<div class="text-center">
+    <b>Transient 2=</b> @transient2.Value
+    <b>Scoped 2=</b> @scoped2.Value
+    <b>Singleton 2=</b> @singleton2.Value
+</div>

@@ -1,0 +1,14 @@
+﻿@model Beer
+
+<p>@ViewBag.Menssaje</p>
+
+<form asp-action="Create">
+
+    CERVEZA: <input asp-for="Nombre" />
+    <span asp-validation-for="Nombre"></span>
+
+    MARCA: <input asp-for="Brand" />
+    <span asp-validation-for="Brand"></span>
+
+    <input type="submit"  value="Guardar" />
+</form>

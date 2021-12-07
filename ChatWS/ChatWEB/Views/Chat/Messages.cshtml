@@ -1,0 +1,133 @@
+﻿@model List<UtilityChat.Models.WS.MessagesResponse>
+
+@{
+    ViewBag.Title = "Chat";
+    UtilityChat.Models.WS.UserResponse oUserSession = (UtilityChat.Models.WS.UserResponse)Session["User"];
+
+    int idRoom = (int)ViewBag.idRoom;
+}
+
+<h2>@ViewBag.Title</h2>
+
+<div class="row">
+    <div class="col-md-12">
+        <b>Mensajes de los usuarios de la sala</b>
+        <div style="height:70vh; border:1px solid #000; border-radius:10px; overflow:auto;" id="AllMessages">
+
+            @foreach (var oMessage in Model)
+            {
+                string classRigth = "";
+
+                if (oMessage.IdUser == oUserSession.Id)
+                {
+                    classRigth = "messageRigth";
+                }
+
+                <div>
+                    <div class="message  @classRigth">
+                        <b>@oMessage.UserName</b>
+                        <div>@oMessage.Message</div>
+                        <div style="text-align:right; font-size:11px;">
+                            @oMessage.DateCreated.ToString()
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            }
+        </div>
+        <div style="height:5vh">
+            <input placeholder="Escribe un mensaje ..." type="text" value="" id="txtMessage" style="width:90%;" />
+            <input id="btnSend" type="button" value="Enviar" class="btn btn-success" />
+        </div>
+    </div>
+</div>
+
+
+@section scripts
+    {
+
+    <!-- instalacion de paquetes de signalR de donde se instalaron-->
+    <script src="~/Scripts/jquery.signalR-2.4.2.js"></script>
+    <script src="@ChatWEB.Business.Constants.Url.SIGNALRHUB"></script>
+
+    <!-- se crea funcion anonima que se ejecuta al inicio para abrir conexion-->
+
+    <script>
+        $(function () {
+            // permitir soliciudes a un servidor externo
+            $.support.cors = true;
+            $.connection.hub.url = "@ChatWEB.Business.Constants.Url.SIGNALR";
+            var Counter = $.connection.counterHub;
+            // se invoca el metodo crado en el concentrador cada vez que se ingrese
+            Counter.client.enterUser = function() {
+                alert("Ingreso un Usuario");
+            }
+
+            Counter.client.sendChat = function (userName, message, fecha, idUsuario) {
+                var classRigth = "";
+
+                if (idUsuario == "@oUserSession.Id") {
+
+                    classRigth = "messageRigth";
+                }
+
+                var newMessage = '<div>' +
+                    "<div class='message' " + classRigth+"'>" +
+                    "<b>"+userName+"</b><br/>" +
+                    "<div>" + message + "</div>" +
+                    "<div style='text-align:right; font-size:11px;'>" +
+                    fecha +
+                    "</div>" 
+                    "</div>" 
+                    "<div class='clear-fix'><div>" 
+                    "</div>";
+
+                $("#AllMessages").append(newMessage);
+                $("#txtMessage").focus();
+                $("#txtMessage").prop("value","");
+                $("#AllMessages").scrollTop($("#AllMessages")[0].scrollHeight);
+            }
+
+
+            // ndica que se ha conectado
+            //inicia el concretador CounterHub remoto que esta en WS
+            $.connection.hub.start().done(function () {
+
+                Counter.server.addGroup("@idRoom")
+
+                $("#btnSend").click(function () {
+
+                    var userName = "@oUserSession.Name";
+                    var idRoom = "@idRoom";
+                    var message = $("#txtMessage").prop("value");
+                    var idUser = "@oUserSession.Id";
+
+                    if (message == "") { return; }
+
+                    // envio de los datos
+                    Counter.server.send(idRoom,userName,idUser,message,"@oUserSession.AccessToker");
+                })
+            });
+        })
+
+    </script>
+
+
+}
+
+
+
+<style>
+
+    .message {
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        width: 50%;
+        margin: 10px;
+        padding: 5px;
+    }
+
+    .messageRigth {
+        float: right;
+    }
+</style>

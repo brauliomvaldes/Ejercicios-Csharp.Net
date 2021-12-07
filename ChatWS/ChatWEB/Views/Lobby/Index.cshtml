@@ -1,0 +1,34 @@
+﻿@model List<UtilityChat.Models.WS.ListRoomsResponse>
+
+@{
+    ViewBag.Title = "Lobby Chat";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<div class="row">
+    <div class="col-md-12">
+        @foreach(var oRoom in Model)
+            {
+                <div>
+                    @oRoom.Name <br />
+                    @oRoom.Description <br />
+                    <div style="text-align:center;">
+                        <input class="btn btn-success" type="button" value="Ir a la Sala" onclick="jsGo(@oRoom.Id);"/>
+                    </div>
+                    
+                </div>
+            }
+    </div>
+</div>
+
+
+<script>
+    function jsGo(idRoom) {
+        document.location.href = "@Url.Content("~/chat/messages")" + "?id=" + idRoom;
+
+    }
+
+
+
+</script>
